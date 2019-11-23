@@ -20,7 +20,7 @@ As illustrated in the image below, the RPi is tasked with capturing authenticati
 
 The outcome of the validation (pass or fail) is sent back to the RPi via a C2D message. Additionally, the attempt (and the outcome) are sent to the Socket.io-connected React application.
 
-![Architectural Diagram](../full-stack-iot/architecture.png)
+![Architectural Diagram](architecture.png)
 
 *Fig 1: Architectural Diagram*
 
