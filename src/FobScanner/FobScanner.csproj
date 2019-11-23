@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="CardRfid">
+      <HintPath>..\..\lib\CardRfid.dll</HintPath>
+    </Reference>
+    <Reference Include="Mifare">
+      <HintPath>..\..\lib\Mifare.dll</HintPath>
+    </Reference>
+    <Reference Include="Pn532">
+      <HintPath>..\..\lib\Pn532.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Device.Gpio">
+      <HintPath>..\..\lib\System.Device.Gpio.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="4.6.0" />
+  </ItemGroup>
+</Project>
