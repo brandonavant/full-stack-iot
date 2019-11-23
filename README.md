@@ -22,8 +22,6 @@ The outcome of the validation (pass or fail) is sent back to the RPi via a C2D m
 
 ![Architectural Diagram](architecture.png)
 
-*Fig 1: Architectural Diagram*
-
 ## Deployment
 
 ### Deploying the React application
