@@ -1,4 +1,4 @@
-# full-stack-iot
+# Full-Stack IoT Demonstration
 
 ## Introduction
 
