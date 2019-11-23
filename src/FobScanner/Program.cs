@@ -8,7 +8,7 @@ using Iot.Device.Pn532.ListPassive;
 using System.Threading;
 using System.Collections.Concurrent;
 
-namespace FobScanner
+namespace BrandonAvant.FullStackIoT.FobScanner
 {
     public class Program
     {

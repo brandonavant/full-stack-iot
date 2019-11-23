@@ -3,7 +3,7 @@
 
 using System;
 
-namespace FobScanner
+namespace BrandonAvant.FullStackIoT.FobScanner
 {
     /// <summary>
     /// Keeps track of the state of the scanner.
