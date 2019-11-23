@@ -3,11 +3,11 @@
 
 namespace BrandonAvant.FullStackIoT.FobScanner
 {
+    /// <summary>
+    /// Keys that allow for getting and setting objects in the concurrent dictionary.
+    /// </summary>
     public class SharedStateKeys
     {
-        /// <summary>
-        /// Key for object that tracks the scanner's state information.
-        /// </summary>
         public const string SCANNER_STATE = "SCANNER_STATE";
     }
 }

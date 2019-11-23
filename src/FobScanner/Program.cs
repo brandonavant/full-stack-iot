@@ -19,44 +19,48 @@ namespace BrandonAvant.FullStackIoT.FobScanner
         /// <typeparam name="object">The object associated with the given key.</typeparam>
         /// <returns></returns>
         private static ConcurrentDictionary<string, object> _sharedDict = new ConcurrentDictionary<string, object>();
-        
+
+        /// <summary>
+        /// The main thread of the application.
+        /// </summary>
+        /// <param name="args">Array of runtime arguments.</param>
         static void Main(string[] args)
         {
-            var i2cDeviceAddress = 0x24;
-            var device = I2cDevice.Create(new I2cConnectionSettings(1, i2cDeviceAddress));
-
-            FirmwareVersion version;
-            ScannerState initialState = new ScannerState { Status = AvailabilityStatus.Idle };
-
-            _sharedDict.TryAdd(SharedStateKeys.SCANNER_STATE, initialState);
-
-            using (var pn532 = new Pn532(device))
+            try
             {
-                version = pn532.FirmwareVersion;
-                if (version == null)
+                var i2cDeviceAddress = 0x24;
+                var device = I2cDevice.Create(new I2cConnectionSettings(1, i2cDeviceAddress));
+
+                FirmwareVersion version;
+                ScannerState initialState = new ScannerState { Status = AvailabilityStatus.Idle };
+
+                _sharedDict.TryAdd(SharedStateKeys.SCANNER_STATE, initialState);
+
+                using (var pn532 = new Pn532(device))
                 {
-                    throw new Exception("Unable to determine firmware version.");
-                }
-
-                Console.WriteLine("Listening...");
-
-                while (true)
-                {
-                    ScannerState currentState;
-
-                    if (!_sharedDict.TryGetValue(SharedStateKeys.SCANNER_STATE, out object state))
+                    version = pn532.FirmwareVersion;
+                    if (version == null)
                     {
-                        throw new Exception("Failed to retrieve scanner state.");
+                        throw new Exception("Unable to determine firmware version.");
                     }
 
-                    currentState = (ScannerState)state;
+                    Console.WriteLine("Listening...");
 
-                    // Avoid scanning when we are awaiting a response from the Cloud.
-                    if (currentState.Status == AvailabilityStatus.Idle)
+                    while (true)
                     {
-                        ReadMiFare(pn532);
+                        ScannerState currentState = GetCurrentState();
+
+                        // Avoid scanning when we are awaiting a response from the Cloud.
+                        if (currentState.Status == AvailabilityStatus.Idle)
+                        {
+                            ReadMiFare(pn532);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error has occurred:", ex.Message);
             }
         }
 
@@ -67,6 +71,8 @@ namespace BrandonAvant.FullStackIoT.FobScanner
         static void ReadMiFare(Pn532 pn532)
         {
             byte[] retData = null;
+            ScannerState currentState;
+            Timer operationTimeout;
 
             while ((!Console.KeyAvailable))
             {
@@ -85,9 +91,50 @@ namespace BrandonAvant.FullStackIoT.FobScanner
             {
                 Console.WriteLine($"Authenticating: {BitConverter.ToString(decrypted.NfcId)}...");
 
-                
-                // TODO: Send a request to IoT Hub with the NFCID and wait for a response.
+                currentState = GetCurrentState();
+                operationTimeout = new Timer(
+                    x => ExpireAuth(),
+                    null, 8000, Timeout.Infinite
+                );
+
+                // TODO: Send a request to IoT Hub with the NFCID
             }
         }
+
+        private static void ExpireAuth()
+        {
+            // TODO: Implement logic to either turn the green light red (if the auth was successful)
+
+            ScannerState currentState = GetCurrentState();
+            ScannerState previousState = currentState;
+
+            currentState.Status = AvailabilityStatus.Idle;
+
+            if(!_sharedDict.TryUpdate(SharedStateKeys.SCANNER_STATE, currentState, previousState))
+            {
+                throw new Exception("Unexpected state change.");
+            }
+            
+            // TODO: Implement log to tell the React app that the auth has expired.
+
+            Console.WriteLine("Timeout reached...Auth expired.");
+        }
+
+        /// <summary>
+        /// Retrieves the current scanner state from the concurrent dictionary.
+        /// </summary>
+        /// <returns></returns>
+        private static ScannerState GetCurrentState()
+        {
+            if (!_sharedDict.TryGetValue(SharedStateKeys.SCANNER_STATE, out object state))
+            {
+                throw new Exception("Failed to retrieve scanner state.");
+            }
+
+            return (ScannerState)state;
+        }
+
+
+        // TODO: Add IoT Hub Listener
     }
 }

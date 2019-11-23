@@ -1,6 +1,10 @@
 # full-stack-iot
 
-The purpose of this repository is to demonstrate to RSI colleagues (and all of the Internet) ways in which a developer can build a full-stack IoT solution using the following technologies:
+## Introduction
+
+The purpose of this repository is to demonstrate to RSI colleagues (and all of the Internet) ways in which a developer can build a full-stack IoT solution using various technologies.
+
+To present a real-world example, I will demonstrate how to utilize an RFID/NFC scanner attempt to authenticate a scanned fob by communicating with the cloud. The scans will instantaneously appear in a log shown on a React application.
 
 - React.js - The front-end will utilize React to provide a SPA for our demo app.
 - Socket.io-client - Since updates from our back-end shall be distributed to the front-end immediately (without constant polling), we want to utilize the WebSocket protocol. Socket.io will provide us with this capability in a nice Managed library.
@@ -9,3 +13,21 @@ The purpose of this repository is to demonstrate to RSI colleagues (and all of t
 - Raspberry Pi - I'll be using a RPi to communicate with the physical hardware from which IoT Hub telemetry is produced.
 - PN532 - I will use a PN532 to provide a hardware input. This will allow users to scan an RFID tag and validate the information in Azure.
 - LED - I will use a single LED to provide a hardware output. This will allow us to provide visible feedback regarding a pass/fail of the PN532 tag validation.
+
+## Architecture
+
+As illustrated in the image below, the RPi is tasked with capturing authentication attempts from users using a physical MiFare card. The corresponding authentication information is JSON-serialized and sent to IoT Hub as a Message. This message is then intercepted by the listening Node.js application, which validates the authentication information against the corresponding record in the CosmosDB database.
+
+The outcome of the validation (pass or fail) is sent back to the RPi via a C2D message. Additionally, the attempt (and the outcome) are sent to the Socket.io-connected React application.
+
+![Architectural Diagram](../full-stack-iot/architecture.png)
+
+*Fig 1: Architectural Diagram*
+
+## Deployment
+
+### Deploying the React application
+
+### Deploying the Node service
+
+### Deploying the Firmware to the RPi
