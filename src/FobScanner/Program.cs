@@ -60,7 +60,7 @@ namespace BrandonAvant.FullStackIoT.FobScanner
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("An error has occurred:", ex.Message);
             }
         }
 
@@ -73,7 +73,6 @@ namespace BrandonAvant.FullStackIoT.FobScanner
             byte[] retData = null;
             ScannerState currentState;
             Timer operationTimeout;
-            string nfcId = string.Empty;
 
             while ((!Console.KeyAvailable))
             {
@@ -90,68 +89,35 @@ namespace BrandonAvant.FullStackIoT.FobScanner
             var decrypted = pn532.TryDecode106kbpsTypeA(retData.AsSpan().Slice(1));
             if (decrypted != null)
             {
+                Console.WriteLine($"Authenticating: {BitConverter.ToString(decrypted.NfcId)}...");
+
                 currentState = GetCurrentState();
+                operationTimeout = new Timer(
+                    x => ExpireAuth(),
+                    null, 8000, Timeout.Infinite
+                );
 
-                if (currentState.Status == AvailabilityStatus.Idle)
-                {
-                    nfcId = BitConverter.ToString(decrypted.NfcId);
-                    Console.WriteLine($"Authenticating: {nfcId} {DateTime.UtcNow.ToString()}...");
-
-                    UpdateScannerStatus(AvailabilityStatus.AwaitingAuthentication, nfcId);
-                    // TODO: Send a request to IoT Hub with the NFCID
-
-                    operationTimeout = new Timer(
-                        x => ExpireAuth(),
-                        null, 8000, Timeout.Infinite
-                    );
-                }
+                // TODO: Send a request to IoT Hub with the NFCID
             }
         }
 
-        /// <summary>
-        /// Marks an existing authentication as expired, thus transitioning the state back to 'Idle'.
-        /// </summary>
         private static void ExpireAuth()
         {
             // TODO: Implement logic to either turn the green light red (if the auth was successful)
-            UpdateScannerStatus(AvailabilityStatus.Idle);
 
+            ScannerState currentState = GetCurrentState();
+            ScannerState previousState = currentState;
 
-            // TODO: Implement log to tell the React app that the auth has expired.
+            currentState.Status = AvailabilityStatus.Idle;
 
-            Console.WriteLine($"Auth expired {DateTime.UtcNow.ToString()}.");
-        }
-
-        /// <summary>
-        /// Updates the ScannerState with a new status.
-        /// </summary>
-        /// <param name="newStatus">The new status.</param>
-        /// <param name="nfcId">The nfcId associated with transitioning to a status of 'AwaitingAuthentication'.</param>
-        /// <remarks>When the status is set to 'AwaitingAuthentication', the nfcId MUST be specified.</remarks>
-        private static void UpdateScannerStatus(AvailabilityStatus newStatus, string nfcId = null)
-        {
-            ScannerState currentState, previousState;
-
-            if (newStatus == AvailabilityStatus.AwaitingAuthentication && nfcId == null)
-            {
-                throw new Exception("When transitioning to 'AwaitingAuthentication', an nfcId must be specified.");
-            }
-
-            currentState = GetCurrentState();
-            previousState = currentState;
-
-            currentState.Status = newStatus;
-
-            if (nfcId != null)
-            {
-                currentState.LastScanNfcId = nfcId;
-                currentState.LastScanTimestamp = DateTime.UtcNow;
-            }
-
-            if (!_sharedDict.TryUpdate(SharedStateKeys.SCANNER_STATE, currentState, previousState))
+            if(!_sharedDict.TryUpdate(SharedStateKeys.SCANNER_STATE, currentState, previousState))
             {
                 throw new Exception("Unexpected state change.");
             }
+            
+            // TODO: Implement log to tell the React app that the auth has expired.
+
+            Console.WriteLine("Timeout reached...Auth expired.");
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace BrandonAvant.FullStackIoT.FobScanner
         /// The NfcId of the last tag scan.
         /// </summary>
         [JsonProperty("lastScanNfcId")]
-        public string LastScanNfcId { get; set; }
+        public byte[] LastScanNfcId { get; set; }
     }
 
 }
