@@ -123,6 +123,7 @@ namespace BrandonAvant.FullStackIoT.FobScanner
                         )
                     );
 
+                    // Send auth to IoT Hub
                     await _deviceClient.SendEventAsync(iotHubMsg);
 
                     operationTimeout = new Timer(
