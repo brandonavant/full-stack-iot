@@ -8,6 +8,6 @@ namespace BrandonAvant.FullStackIoT.FobScanner
     /// </summary>
     public class SharedStateKeys
     {
-        public const string SCANNER_STATE = "SCANNER_STATE";
+        public const string ScannerState = "ScannerState";
     }
 }

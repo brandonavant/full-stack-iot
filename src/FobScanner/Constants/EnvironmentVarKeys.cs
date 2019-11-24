@@ -1,10 +1,8 @@
 ﻿using System;
-namespace FobScanner.Constants
+namespace BrandonAvant.FullStackIoT.FobScanner
 {
     public class EnvironmentVarKeys
     {
-        public EnvironmentVarKeys()
-        {
-        }
+        public const string IoTHubConnectionString = "IoTHubConnectionString";
     }
 }
