@@ -12,6 +12,9 @@ using Iot.Device.Rfid;
 using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
+using M2Mqtt;
+using System.IO;
 
 namespace BrandonAvant.FullStackIoT.FobScanner
 {
@@ -43,37 +46,61 @@ namespace BrandonAvant.FullStackIoT.FobScanner
         {
             try
             {
-                var i2cDeviceAddress = 0x24;
-                var device = I2cDevice.Create(new I2cConnectionSettings(1, i2cDeviceAddress));
+                var iotEndpoint = "GET_FROM_INTERACT_SECTION_HTTPS_ENDPOINT";
+                var brokerPort = 8883;
+                var topic = "Hello/World";
+                var message = "Test message";
 
-                FirmwareVersion version;
-                ScannerState initialState = new ScannerState { Status = AvailabilityStatus.Idle };
-                Task iotHubListener = IoTHubListener();
 
-                await Task.Run(IoTHubListener);
+                var caCert = X509Certificate.CreateFromCertFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "certificates/Amazon_Root_CA_1.crt"));
+                var clientCert = new X509Certificate2(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "certificates/<Key>.cert.pfx"), "<Password>");
 
-                _sharedDict.TryAdd(SharedStateKeys.ScannerState, initialState);
+                var client = new MqttClient(iotEndpoint, brokerPort, true, caCert, clientCert, MqttSslProtocols.TLSv1_2);
 
-                using Pn532 pn532 = new Pn532(device);
-                version = pn532.FirmwareVersion;
+                string clientId = Guid.NewGuid().ToString();
+                client.Connect(clientId);
 
-                if (version == null)
-                {
-                    throw new Exception("Unable to determine firmware version.");
-                }
+                Console.WriteLine($"Connected to AWS IoT with client id: {clientId}.");
 
-                Console.WriteLine("Listening...");
-
+                int i = 0;
                 while (true)
                 {
-                    ScannerState currentState = GetCurrentState();
-
-                    // Avoid scanning when we are awaiting a response from the Cloud.
-                    if (currentState.Status == AvailabilityStatus.Idle)
-                    {
-                        await ReadMiFare(pn532);
-                    }
+                    client.Publish(topic, Encoding.UTF8.GetBytes($"{message} {i}"));
+                    Console.WriteLine($"Published: {message} {i}");
+                    i++;
+                    Thread.Sleep(5000);
                 }
+                //var i2cDeviceAddress = 0x24;
+                //var device = I2cDevice.Create(new I2cConnectionSettings(1, i2cDeviceAddress));
+
+                //FirmwareVersion version;
+                //ScannerState initialState = new ScannerState { Status = AvailabilityStatus.Idle };
+                //Task iotHubListener = IoTHubListener();
+
+                //await Task.Run(IoTHubListener);
+
+                //_sharedDict.TryAdd(SharedStateKeys.ScannerState, initialState);
+
+                //using Pn532 pn532 = new Pn532(device);
+                //version = pn532.FirmwareVersion;
+
+                //if (version == null)
+                //{
+                //    throw new Exception("Unable to determine firmware version.");
+                //}
+
+                //Console.WriteLine("Listening...");
+
+                //while (true)
+                //{
+                //    ScannerState currentState = GetCurrentState();
+
+                //    // Avoid scanning when we are awaiting a response from the Cloud.
+                //    if (currentState.Status == AvailabilityStatus.Idle)
+                //    {
+                //        await ReadMiFare(pn532);
+                //    }
+                //}
             }
             catch (Exception ex)
             {

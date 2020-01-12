@@ -6,7 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FobScanner", "src\FobScanner\FobScanner.csproj", "{DD0BC39A-5544-46B0-8901-2B5BF4015D53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FobScanner", "src\FobScanner-CS\FobScanner.csproj", "{DD0BC39A-5544-46B0-8901-2B5BF4015D53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

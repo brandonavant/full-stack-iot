@@ -2,3 +2,10 @@
 
 .vs
 .vscode
+
+# Certificate Files
+
+*.crt
+*.pfx
+*.pem
+*.key
