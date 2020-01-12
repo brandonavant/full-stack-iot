@@ -48,6 +48,9 @@ namespace BrandonAvant.FullStackIoT.FobScanner
 
                 FirmwareVersion version;
                 ScannerState initialState = new ScannerState { Status = AvailabilityStatus.Idle };
+                Task iotHubListener = IoTHubListener();
+
+                await Task.Run(IoTHubListener);
 
                 _sharedDict.TryAdd(SharedStateKeys.ScannerState, initialState);
 
@@ -74,7 +77,7 @@ namespace BrandonAvant.FullStackIoT.FobScanner
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
             }
         }
 
@@ -194,7 +197,22 @@ namespace BrandonAvant.FullStackIoT.FobScanner
             return (ScannerState)state;
         }
 
+        /// <summary>
+        /// Listens for C2D messages coming from IoT Hub.
+        /// </summary>
+        private static async Task IoTHubListener()
+        {
+            Message incomingMessage;
+            var decodedMessage = string.Empty;
 
-        // TODO: Add IoT Hub Listener
+            while(true)
+            {
+                incomingMessage = await _deviceClient.ReceiveAsync();
+                if (incomingMessage != null)
+                {
+                    decodedMessage = Encoding.UTF8.GetString(incomingMessage.GetBytes());
+                }
+            }
+        }
     }
 }
