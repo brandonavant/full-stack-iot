@@ -1,0 +1,14 @@
+{
+  "name": "full-stack-iot-backend",
+  "version": "1.0.0",
+  "description": "RESTFul API for Full Stack IoT Example.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brandon Avant",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
