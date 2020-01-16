@@ -28,15 +28,11 @@ namespace BrandonAvant.FullStackIoT.FobScanner
         /// <returns></returns>
         private static ConcurrentDictionary<string, object> _sharedDict = new ConcurrentDictionary<string, object>();
 
-        /// <summary>
-        /// The connection string for IoT Hub.
-        /// </summary>
-        private static string _iotHubConnectionString = Environment.GetEnvironmentVariable(EnvironmentVarKeys.IoTHubConnectionString);
+        private static readonly string IoTCoreEndpoint = Environment.GetEnvironmentVariable("IOT_CORE_ENDPOINT");
 
-        /// <summary>
-        /// Provides communication with Azure IoT Hub.
-        /// </summary>
-        private static DeviceClient _deviceClient = DeviceClient.CreateFromConnectionString(_iotHubConnectionString, TransportType.Mqtt);
+        private static readonly string IoTCorePfxFileName = Environment.GetEnvironmentVariable("IOT_CORE_PFX");
+
+        private static readonly string IoTCorePfxPassword = Environment.GetEnvironmentVariable("IOT_CORE_PFX_PASSWORD");
 
         /// <summary>
         /// The main thread of the application.
@@ -46,16 +42,15 @@ namespace BrandonAvant.FullStackIoT.FobScanner
         {
             try
             {
-                var iotEndpoint = "GET_FROM_INTERACT_SECTION_HTTPS_ENDPOINT";
                 var brokerPort = 8883;
                 var topic = "Hello/World";
                 var message = "Test message";
 
+                var homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var caCert = X509Certificate.CreateFromCertFile(Path.Combine(homeDirectory, "certificates", "Amazon_Root_CA_1.crt"));
+                var clientCert = new X509Certificate2(Path.Combine(homeDirectory, "certificates", IoTCorePfxFileName), IoTCorePfxPassword);
 
-                var caCert = X509Certificate.CreateFromCertFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "certificates/Amazon_Root_CA_1.crt"));
-                var clientCert = new X509Certificate2(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "certificates/<Key>.cert.pfx"), "<Password>");
-
-                var client = new MqttClient(iotEndpoint, brokerPort, true, caCert, clientCert, MqttSslProtocols.TLSv1_2);
+                var client = new MqttClient(IoTCoreEndpoint, brokerPort, true, caCert, clientCert, MqttSslProtocols.TLSv1_2);
 
                 string clientId = Guid.NewGuid().ToString();
                 client.Connect(clientId);
@@ -154,7 +149,7 @@ namespace BrandonAvant.FullStackIoT.FobScanner
                     );
 
                     // Send auth to IoT Hub
-                    await _deviceClient.SendEventAsync(iotHubMsg);
+                    // await _deviceClient.SendEventAsync(iotHubMsg);
 
                     operationTimeout = new Timer(
                         x => ExpireAuth(),
@@ -224,22 +219,22 @@ namespace BrandonAvant.FullStackIoT.FobScanner
             return (ScannerState)state;
         }
 
-        /// <summary>
-        /// Listens for C2D messages coming from IoT Hub.
-        /// </summary>
-        private static async Task IoTHubListener()
-        {
-            Message incomingMessage;
-            var decodedMessage = string.Empty;
+        // /// <summary>
+        // /// Listens for C2D messages coming from IoT Hub.
+        // /// </summary>
+        // private static async Task IoTHubListener()
+        // {
+        //     Message incomingMessage;
+        //     var decodedMessage = string.Empty;
 
-            while(true)
-            {
-                incomingMessage = await _deviceClient.ReceiveAsync();
-                if (incomingMessage != null)
-                {
-                    decodedMessage = Encoding.UTF8.GetString(incomingMessage.GetBytes());
-                }
-            }
-        }
+        //     while(true)
+        //     {
+        //         incomingMessage = await _deviceClient.ReceiveAsync();
+        //         if (incomingMessage != null)
+        //         {
+        //             decodedMessage = Encoding.UTF8.GetString(incomingMessage.GetBytes());
+        //         }
+        //     }
+        // }
     }
 }

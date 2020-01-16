@@ -1,4 +1,7 @@
-﻿namespace BrandonAvant.FullStackIoT.FobScanner
+﻿// Copyright (c) Brandon Avant. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace BrandonAvant.FullStackIoT.FobScanner
 {
     /// <summary>
     /// Base constructor for D2C messages.
