@@ -1,57 +1,49 @@
 # Full-Stack IoT Demonstration
 
-## Introduction
+The purpose of this repository is to demonstrate a full-stack IoT solution using the following technologies:
 
-The purpose of this repository is to demonstrate to RSI colleagues (and all of the Internet) ways in which a developer can build a full-stack IoT solution using various technologies.
+- Raspberry Pi
+- Amazon Alexa
+- NodeJs
+- AWS Lambda
 
-To present a real-world example, I will demonstrate how to utilize an RFID/NFC scanner attempt to authenticate a scanned fob by communicating with the cloud. The scans will instantaneously appear in a log shown on a React application.
+## Raspberry Pi
 
-## Technologies
+In this probject, we will connect an LED to a Raspberry Pi. We will wire an RGB LED to the RPi and change the color using commands sent from Alexa and/or a front-end application. Because we will be utilizing an RGB LED, we will need to utilize PWM (Pulse-width modulation).
 
-Below you will find a list of technologies used in this implementation:
+### Materials
 
-### Cloud
+In order to implement the RPi setup, you will need the following components:
 
-- AWS IoT Core - We will be using AWS IoT Core to manage our "Things" and provide ways in which our device can publish telemetry and consumers can subscribe to these payloads.
+- A Raspberry Pi running Raspbian, SSH, and Node.js.
+- The [pigpio module](https://www.npmjs.com/package/pigpio) for Node.js.
+- A Breadboard.
+- Three 220 Ohm resistors.
+- One RGB LED (this tutorial uses a common cathode).
+- Four female-to-male jumper wires.
 
-### Web Application
+Note: [This kit](https://www.amazon.com/dp/B01ERPEMAC/ref=cm_sw_r_tw_dp_U_x_7J4CEb4HV4TNT) on Amazon has all of the components that you need (and more) and is pretty cheap!
 
-- React.js - The front-end will utilize React to provide a SPA for our demo app.
-- Socket.io-client - Since updates from our back-end shall be distributed to the front-end immediately (without constant polling), we want to utilize the WebSocket protocol. Socket.io will provide us with this capability in a nice Managed library.
+### Installing pigpio
 
-### Backend
+We will be using the Node.js *pigpio* wrapper, which provides the ability to interact with PWM (pulse-width-modulation) components from our code on the RPi. The install, run the following commands in the given order:
 
-- Node.js - Since our front-end is 100% JavaScript, what better than to use JavaScript on the back-end as well? The back-end will provide both a RESTful API and socket.io connectivity for our React app. This layer is also tasked with reading from the Event Hubs data produced by IoT Hub.
+First update the package repository's lists:
 
-### Device
+```pi@raspberrypi:~ $ sudo apt update```
 
-- Python - We will utilize a Python appplication on our Raspberry Pi to communicate with the hardware components. This layer will report data to Azure IoT Hub via the Azure SDK.
-- Raspberry Pi - I'll be using a RPi to communicate with the physical hardware from which IoT Hub telemetry is produced.
-- PN532 - I will use a PN532 to provide a hardware input. This will allow users to scan an RFID tag and validate the information in Azure.
-- LED - I will use a single LED to provide a hardware output. This will allow us to provide visible feedback regarding a pass/fail of the PN532 tag validation.
+Next, install the C library on top of which the Node.js pigpio wrapper is built:
 
-## Architecture
+```pi@raspberrypi:~ $ sudo apt install pigpio```
 
-As illustrated in the image below, the RPi is tasked with capturing authentication attempts from users using a physical MiFare card. The corresponding authentication information is JSON-serialized and sent to IoT Hub as a Message. This message is then intercepted by the listening Node.js application, which validates the authentication information against the corresponding record in the CosmosDB database.
+Finally, install the wrapper:
 
-The outcome of the validation (pass or fail) is sent back to the RPi via a C2D message. Additionally, the attempt (and the outcome) are sent to the Socket.io-connected React application.
+```pi@raspberrypi:~ $ npm i pigpio```
 
-![Architectural Diagram](architecture.png)
+Note: When running code that utilizes the pigpio library, you will need root/sudo privileges. This is because the wrapper uses the underlying C library.
 
-## Setup
+### Building the circuit
 
-### AWS IoT Core Setup
+In order to get our Node.js code to control the LED via PWM, we first need to wire up the LED on a breadboard. The diagram below demonstrates how things should be wired.
 
-One of the first things that you will need to do is to create an IoT Core Thing. In order to perform the appropriate tasks for this, please read the documentation [here](https://docs.aws.amazon.com/iot/latest/developerguide/register-device.html).
-
-You will need the following permissions in the policy that you attach to the thing:
-
-- TBD
-- TBD
-- TBD
-
-### Raspberry Pi
-
-#### Environment Variables
-
-You will need to add the following environment variables to ```/etc/profile``` (or whereever your environment variables are pulled from):
+![circuit](circuit.png)
