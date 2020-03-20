@@ -6,11 +6,11 @@ const greenLed = new Gpio(17, { mode: Gpio.OUTPUT });
 const blueLed = new Gpio(27, { mode: Gpio.OUTPUT });
 
 const device = awsIot.device({
-  keyPath: process.env.IoTCorePrivateKeyPath,
-  certPath: process.env.IoTCoreCertPath,
-  caPath: process.env.IoTCoreCaPath,
-  clientId: process.env.IoTCoreClientId,
-  host: process.env.IoTCoreEndpoint
+  keyPath: '<IoTCorePrivateKeyPath>',
+  certPath: '<IoTCoreCertPath>',
+  caPath: '<IoTCoreCaPath>',
+  clientId: '<IoTCoreClientId>',
+  host: 'IoTCoreEndpoint'
 });
 
 device.on('connect', () => {
