@@ -1,0 +1,15 @@
+{
+  "name": "full-stack-iot-rpi",
+  "version": "1.0.0",
+  "description": "Demonstrates capturing messages from AWS IoT Core and turning on an RGB LED accordingly.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brandon Avant",
+  "license": "ISC",
+  "dependencies": {
+    "aws-iot-device-sdk": "^2.2.3",
+    "pigpio": "^3.0.0"
+  }
+}

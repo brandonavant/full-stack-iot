@@ -47,3 +47,66 @@ Note: When running code that utilizes the pigpio library, you will need root/sud
 In order to get our Node.js code to control the LED via PWM, we first need to wire up the LED on a breadboard. The diagram below demonstrates how things should be wired.
 
 ![circuit](circuit.png)
+
+## IoT Core
+
+In order to provide connectivity between cloud applications (e.g. Alexa Skills, React apps, etc.) and the Raspberry Pi, we must provision a *Thing* in IoT Core.
+
+### Add a device to the Thing registry
+
+1. Login to the AWS Console and search for IoT Core.
+2. Once IoT Core is shown, click *Manage* and then *Things*.
+3. Click *Register a thing*.
+4. Click *Create a single thing*.
+5. Type a meaningful name for the thing (e.g. *Raspberry-Pi*).
+6. Skip the other options on the first page and click *Next*.
+7. Click *Create certificate*.
+8. Download *A certificate for this thing* and *A private Key*. You don't need the public key.
+9. Click *A root CA for AWS IoT*, which will navigate you to the *Server Authentication Certificate* page. Scroll down and download *Amazon Root CA 1* or *Amazon Root CA 3*.
+10. Store these files somewhere safe on your local machine. 
+11. Click Activate.
+12. Click Create Policy.
+
+**Note: Never share these files; they are secrets**.
+
+### Creating an IoT Policy
+
+We must define actions for which our device is authorized. Complete the following steps:
+
+1. In the name field, type a meaningful policy name (e.g. Rapberry-Pi-Policy).
+2. For *Actions* type `iot:*`.
+3. For *Resource ARN* type `*`.
+4. For *Effect* check Allow.
+5. Click *Create*.
+
+**IMPORTANT NOTE:* We are opening up all actions and resource access. This is insecure for a production environment. For an actual production setup, you will want to provide a minimum rights (i.e. only what's needed).
+
+### Attach Policy to Device Certificate
+
+Now that we've created our policy, we need to attach it to the previously-create certificate.
+
+1. Click Secure->Certificates.
+2. Click the ellipses (i.e. ...) and *Attach policy*.
+3. Check the new policy and click *Attach*.
+
+### Attach Certificate to Thing
+
+Finally, let's attach the certificate to the Thing.
+
+1. Click Secure->Certificates.
+2. Click the ellipses (i.e. ...) and *Attach thing*.
+3. Check the Thing and click *Attach*.
+
+## Setting up the RPi Environment
+
+### Cloning the Code
+
+### Environment Variables
+
+In order to pull the unique *IoTCore* environment variables referenced in the code, you will need to export the values in `/etc/profile`. In order to do this, type `sudo nano /etc/profile` and enter the following values at the bottom:
+
+Note: the clientId and endpoint can be found in the following places:
+
+#### ClientId Location
+
+### Endpoint Location
