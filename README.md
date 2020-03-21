@@ -99,13 +99,29 @@ Finally, let's attach the certificate to the Thing.
 
 ## Setting up the RPi Environment
 
-### Cloning the Code
+The Raspberry Pi will need to run the Node application found under `/src/rpi`. This code will connect to AWS IoT Core and listen for messages pushed to an SNS subscription. 
 
-### Environment Variables
+When the messages arrive, the Node application will parse the payload and set the LED color to whatever is indicated inside.
 
-In order to pull the unique *IoTCore* environment variables referenced in the code, you will need to export the values in `/etc/profile`. In order to do this, type `sudo nano /etc/profile` and enter the following values at the bottom:
+The payload is simple and looks like this:
 
-Note: the clientId and endpoint can be found in the following places:
+```
+{
+  red: 255,
+  green: 0,
+  blue: 0
+}
+```
+
+Note: The sample payload above would cause the LED to change to RED.
+
+In order to make this work, there are a few steps that we must follow on the RPi:
+
+Note: Please ensure that you have Node and NPM installed on the RPi.
+
+1. First and foremost, we must pull the code down to the RPi. You can do this by using Git to clone the repository to the RPi. An alternative could be to manually copy the files over using SFTP or the like.
+2. You will also need to also transfer the certificate values that we generated in the steps above.
+3. After getting the code, you fill in each of the placeholder values in `index.js` with the corresponding values. The paths should be a relative path to the certificate files that we downloaded earlier.
 
 #### ClientId Location
 
