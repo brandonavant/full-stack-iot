@@ -1,0 +1,16 @@
+{
+  "name": "full-stack-iot-functions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "changeLightRequest.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ask-sdk-core": "^2.7.0",
+    "ask-sdk-model": "^1.27.0",
+    "aws-sdk": "^2.643.0"
+  }
+}
