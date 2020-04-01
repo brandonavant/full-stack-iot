@@ -1,8 +1,6 @@
-# Welcome to your CDK TypeScript project!
+# Full-Stack IoT CDK Project
 
-This is a blank project for TypeScript development with CDK.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+The CDK drives the deployment of both the AWS Lambda function, which acts as the endpoint for the Alexa Skill Kit, and the API Gateway endpoint, which acts as a proxy between the HTTPS requests that the ASK makes and the Lambda function.
 
 ## Useful commands
 
