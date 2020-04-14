@@ -125,4 +125,22 @@ Note: Please ensure that you have Node and NPM installed on the RPi.
 
 #### ClientId Location
 
+To find your IoT Core "thing's" clientId:
+
+1. Navigate to AWS IoT in the AWS Console.
+2. Click *Manage* on the left-side pane.
+3. Click *Things*.
+4. Click the thing (e.g. Raspberry-Pi) that you created in the previous steps.
+5. The *arn* shown on this screen (starts with arn:aws:iot:...) is your clientId.
+
 ### Endpoint Location
+
+To find your IoT Core "thing's" endpoint:
+
+1. Navigate to AWS IoT in the AWS Console.
+2. Click *Manage* on the left-side pane.
+3. Click *Things*.
+4. Click the thing (e.g. Raspberry-Pi) that you created in the previous steps.
+5. Click *Interact*.
+6. The HTTPS endpoint shown here is your thing's endpoint.
+
