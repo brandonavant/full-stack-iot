@@ -11,6 +11,6 @@
   "dependencies": {
     "ask-sdk-core": "^2.7.0",
     "ask-sdk-model": "^1.27.0",
-    "aws-sdk": "^2.643.0"
+    "aws-sdk": "^2.814.0"
   }
 }
